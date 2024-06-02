@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as install
 
 MAINTAINER z4yx <z4yx@users.noreply.github.com>
 
@@ -37,6 +37,12 @@ ADD ${VIVADO_TAR_FILE} /install_vivado/
 # run the install
 RUN ls /install_vivado && /install_vivado/*/xsetup --agree 3rdPartyEULA,XilinxEULA --batch Install --config /install_config.txt && \
   rm -rf /${VIVADO_TAR_FILE} /install_config.txt /install_vivado
+
+FROM scratch
+
+ARG VIVADO_VERSION
+
+COPY --from=install / /
 
 #make a Vivado user
 RUN adduser --disabled-password --gecos '' vivado &&\
