@@ -35,13 +35,18 @@ COPY install_config.txt /
 ADD ${VIVADO_TAR_FILE} /install_vivado/
 
 # run the install
-RUN ls /install_vivado && /install_vivado/*/xsetup --agree 3rdPartyEULA,WebTalkTerms,XilinxEULA --batch Install --config /install_config.txt && \
+RUN ls /install_vivado && /install_vivado/*/xsetup --agree 3rdPartyEULA,XilinxEULA --batch Install --config /install_config.txt && \
   rm -rf /${VIVADO_TAR_FILE} /install_config.txt /install_vivado
 
 #make a Vivado user
 RUN adduser --disabled-password --gecos '' vivado &&\
   usermod -aG sudo vivado &&\
   echo "vivado ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+#add en_US.UTF-8 locale
+RUN apt install -y locales
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+RUN locale-gen
 
 USER vivado
 WORKDIR /home/vivado
